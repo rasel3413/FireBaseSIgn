@@ -15,8 +15,7 @@ class sign_in : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding= ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val email=binding.Email.text.toString()
-        val pass=binding.pass.text.toString()
+
         firebaseAuth=FirebaseAuth.getInstance()
         if(firebaseAuth.currentUser!=null){
             val intent=Intent(this,MainActivity::class.java)
@@ -24,17 +23,27 @@ class sign_in : AppCompatActivity() {
 
         }
         binding.tvs.setOnClickListener {
-            val intent= Intent(this,sign_up::class.java)
-            startActivity(intent)
+//            val intent= Intent(this,sign_up::class.java)
+//
+//            startActivity(intent)
+           firebaseAuth.signOut()
         }
         binding.btnSignIn.setOnClickListener {
-
+            val email=binding.Email.text.toString()
+            val pass=binding.pass.text.toString()
+            if(email.isEmpty()){
+                Toast.makeText(this, "email is empty", Toast.LENGTH_SHORT).show()
+            }
+            if(pass.isEmpty()){
+                Toast.makeText(this, "pass is empty", Toast.LENGTH_SHORT).show()
+            }
 
             if(email.isNotEmpty()&& pass.isNotEmpty())
             {
                 firebaseAuth.signInWithEmailAndPassword(email,pass).addOnCompleteListener{
                     if(it.isSuccessful){
                         val intent=Intent(this,MainActivity::class.java)
+                        intent.putExtra("rasel", firebaseAuth.currentUser?.displayName.toString())
                         startActivity(intent)
                     }else{
                         Toast.makeText(this,it.exception.toString(),Toast.LENGTH_SHORT).show()
